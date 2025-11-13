@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讀書會管理平台 - User Personas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 50%, #f3e8ff 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        [contenteditable="true"] {
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        [contenteditable="true"]:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 0.25rem;
+        }
+        
+        [contenteditable="true"]:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0.25rem;
+            padding: 0.125rem 0.25rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+        
+        .header p {
+            font-size: 1.125rem;
+            color: #6b7280;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .persona-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .persona-card:hover {
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .persona-card.active {
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: #4f46e5;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .persona-card h3 {
+            font-size: 1.25rem;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .persona-card .role {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .main-card.active {
+            display: block;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 2rem;
+            color: white;
+            display: flex;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .card-header .avatar {
+            width: 120px;
+            height: 120px;
+            border: 4px solid white;
+            flex-shrink: 0;
+        }
+        
+        .card-header-info {
+            flex: 1;
+        }
+        
+        .card-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-header .meta {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        
+        .quote {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-style: italic;
+        }
+        
+        .card-content {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .section {
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+        
+        .section.goals { background: #f0fdf4; }
+        .section.pains { background: #fef2f2; }
+        .section.scenario { 
+            background: #eff6ff;
+            grid-column: 1 / -1;
+        }
+        .section.behaviors { background: #faf5ff; }
+        .section.stats { background: #eef2ff; }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header h3 {
+            font-size: 1.25rem;
+            color: #1f2937;
+        }
+        
+        .section ul {
+            list-style: none;
+        }
+        
+        .section li {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .goals li::before { content: "✓"; color: #16a34a; font-weight: bold; }
+        .pains li::before { content: "✗"; color: #dc2626; font-weight: bold; }
+        .behaviors li::before { content: "•"; color: #7c3aed; font-weight: bold; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #4f46e5;
+            border-radius: 1rem;
+            transition: width 0.5s;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #374151;
+            margin-top: 1rem;
+        }
+        
+        .insights {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .insights h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .insight-item {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .insight-item strong {
+            color: #1f2937;
+        }
+        
+        .arrow {
+            color: #4f46e5;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .card-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">
+                📚 使用者研究報告
+            </div>
+            <h1 contenteditable="true">讀書會管理平台 User Personas</h1>
+            <p contenteditable="true">基於使用者訪談與行為分析，我們識別出 4 種核心用戶類型，以下為詳細的 Persona 分析</p>
+        </div>
+
+        <div class="persona-grid">
+            <div class="persona-card active" onclick="showPersona(0)">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=YaTing&backgroundColor=b6e3f4" alt="陳雅婷" class="avatar">
+                <h3>陳雅婷</h3>
+                <p class="role">讀書會發起人</p>
+            </div>
+            <div class="persona-card" onclick="showPersona(1)">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ZhiHao&backgroundColor=c0aede" alt="林志豪" class="avatar">
+                <h3>林志豪</h3>
+                <p class="role">積極參與者</p>
+            </div>
+            <div class="persona-card" onclick="showPersona(2)">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=MeiQi&backgroundColor=ffdfbf" alt="王美琪" class="avatar">
+                <h3>王美琪</h3>
+                <p class="role">彈性參與者</p>
+            </div>
+            <div class="persona-card" onclick="showPersona(3)">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=YuXuan&backgroundColor=d1d4f9" alt="張宇軒" class="avatar">
+                <h3>張宇軒</h3>
+                <p class="role">探索學習者</p>
+            </div>
+        </div>
+
+        <div class="main-card active" id="persona-0">
+            <div class="card-header">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=YaTing&backgroundColor=b6e3f4" alt="陳雅婷" class="avatar">
+                <div class="card-header-info">
+                    <h2 contenteditable="true">陳雅婷</h2>
+                    <div class="meta" contenteditable="true">28 歲 • 產品經理</div>
+                    <div class="quote" contenteditable="true">"我想建立一個能持續學習成長的社群，但工具太分散讓我疲於奔命"</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section goals">
+                    <div class="section-header">
+                        <span>🎯</span>
+                        <h3>目標與動機</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">建立高品質的學習社群</span></li>
+                        <li><span contenteditable="true">有效管理讀書會活動與成員</span></li>
+                        <li><span contenteditable="true">追蹤成員參與度與學習成效</span></li>
+                        <li><span contenteditable="true">創造有價值的知識交流空間</span></li>
+                    </ul>
+                </div>
+                <div class="section pains">
+                    <div class="section-header">
+                        <span>⚡</span>
+                        <h3>痛點與挫折</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">需要在 Zoom、Notion、LINE、Google Calendar 間來回切換</span></li>
+                        <li><span contenteditable="true">難以追蹤成員的學習進度與筆記</span></li>
+                        <li><span contenteditable="true">活動通知常被埋沒在訊息中</span></li>
+                        <li><span contenteditable="true">缺乏統一的白板工具進行討論</span></li>
+                        <li><span contenteditable="true">無法有效管理錄影回放與資料庫</span></li>
+                    </ul>
+                </div>
+                <div class="section scenario">
+                    <div class="section-header">
+                        <span>📖</span>
+                        <h3>典型使用情境</h3>
+                    </div>
+                    <p contenteditable="true">每週三晚上 8 點主持「產品思維讀書會」，需要在開會前準備議程、發送通知、準備討論素材。會議中需要分享螢幕、使用白板、記錄重點。會後要整理錄影、分享筆記、安排下次主題。</p>
+                </div>
+                <div class="section behaviors">
+                    <div class="section-header">
+                        <span>👥</span>
+                        <h3>行為特徵</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">每週花 3-4 小時準備讀書會內容</span></li>
+                        <li><span contenteditable="true">習慣在通勤時回覆成員提問</span></li>
+                        <li><span contenteditable="true">重視社群氛圍與成員互動</span></li>
+                        <li><span contenteditable="true">喜歡使用視覺化工具呈現概念</span></li>
+                    </ul>
+                </div>
+                <div class="section stats">
+                    <div class="section-header">
+                        <span>⭐</span>
+                        <h3>使用指標</h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280; font-size: 0.875rem;">技術熟悉度</span>
+                            <span style="font-weight: bold;" contenteditable="true">75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span>🕐</span>
+                        <span><strong>使用頻率：</strong><span contenteditable="true">每週 3-5 次</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span>💼</span>
+                        <span><strong>投入時間：</strong><span contenteditable="true">每週 8-10 小時</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-card" id="persona-1">
+            <div class="card-header">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ZhiHao&backgroundColor=c0aede" alt="林志豪" class="avatar">
+                <div class="card-header-info">
+                    <h2 contenteditable="true">林志豪</h2>
+                    <div class="meta" contenteditable="true">25 歲 • 軟體工程師</div>
+                    <div class="quote" contenteditable="true">"我想精進技術能力，但希望學習過程能更有系統、更有互動感"</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section goals">
+                    <div class="section-header">
+                        <span>🎯</span>
+                        <h3>目標與動機</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">系統化學習新技術與產業知識</span></li>
+                        <li><span contenteditable="true">與同好交流討論技術問題</span></li>
+                        <li><span contenteditable="true">建立個人知識庫與學習筆記</span></li>
+                        <li><span contenteditable="true">拓展職涯人脈</span></li>
+                    </ul>
+                </div>
+                <div class="section pains">
+                    <div class="section-header">
+                        <span>⚡</span>
+                        <h3>痛點與挫折</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">筆記分散在各個平台，難以整理</span></li>
+                        <li><span contenteditable="true">錯過直播時找不到完整錄影</span></li>
+                        <li><span contenteditable="true">想回顧某個討論片段但要翻很久</span></li>
+                        <li><span contenteditable="true">無法即時在討論中畫圖說明想法</span></li>
+                        <li><span contenteditable="true">活動資訊常漏看</span></li>
+                    </ul>
+                </div>
+                <div class="section scenario">
+                    <div class="section-header">
+                        <span>📖</span>
+                        <h3>典型使用情境</h3>
+                    </div>
+                    <p contenteditable="true">下班後 7 點到家，快速吃完晚餐後，8 點準時上線參加「技術架構讀書會」。會議中會開著筆記軟體邊聽邊記，遇到不懂的地方會截圖並標註。週末時會回看錄影，整理本週學習重點。</p>
+                </div>
+                <div class="section behaviors">
+                    <div class="section-header">
+                        <span>👥</span>
+                        <h3>行為特徵</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">習慣做詳細的學習筆記</span></li>
+                        <li><span contenteditable="true">會主動在社群提問與分享</span></li>
+                        <li><span contenteditable="true">喜歡重複觀看重要片段</span></li>
+                        <li><span contenteditable="true">重視知識的系統化整理</span></li>
+                    </ul>
+                </div>
+                <div class="section stats">
+                    <div class="section-header">
+                        <span>⭐</span>
+                        <h3>使用指標</h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280; font-size: 0.875rem;">技術熟悉度</span>
+                            <span style="font-weight: bold;" contenteditable="true">85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span>🕐</span>
+                        <span><strong>使用頻率：</strong><span contenteditable="true">每週 2-3 次</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span>💼</span>
+                        <span><strong>投入時間：</strong><span contenteditable="true">每週 5-7 小時</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-card" id="persona-2">
+            <div class="card-header">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=MeiQi&backgroundColor=ffdfbf" alt="王美琪" class="avatar">
+                <div class="card-header-info">
+                    <h2 contenteditable="true">王美琪</h2>
+                    <div class="meta" contenteditable="true">32 歲 • 行銷專員</div>
+                    <div class="quote" contenteditable="true">"工作太忙了，我需要能彈性學習又不失去社群連結的方式"</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section goals">
+                    <div class="section-header">
+                        <span>🎯</span>
+                        <h3>目標與動機</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">利用零碎時間學習數位行銷新知</span></li>
+                        <li><span contenteditable="true">轉職前累積作品集與實戰經驗</span></li>
+                        <li><span contenteditable="true">認識業界前輩獲得職涯建議</span></li>
+                        <li><span contenteditable="true">保持與學習社群的連結</span></li>
+                    </ul>
+                </div>
+                <div class="section pains">
+                    <div class="section-header">
+                        <span>⚡</span>
+                        <h3>痛點與挫折</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">常因加班錯過直播時間</span></li>
+                        <li><span contenteditable="true">回放影片找不到重點段落</span></li>
+                        <li><span contenteditable="true">想參與討論但已經過時</span></li>
+                        <li><span contenteditable="true">筆記散落各處，複習時很混亂</span></li>
+                        <li><span contenteditable="true">不確定哪些活動適合自己</span></li>
+                    </ul>
+                </div>
+                <div class="section scenario">
+                    <div class="section-header">
+                        <span>📖</span>
+                        <h3>典型使用情境</h3>
+                    </div>
+                    <p contenteditable="true">因工作時間不固定，常無法準時參加讀書會直播。習慣在週末早上 10 點，泡杯咖啡後打開平台，觀看本週錯過的內容。會快速瀏覽社群討論，補上自己的想法，並將重要內容記在筆記中。</p>
+                </div>
+                <div class="section behaviors">
+                    <div class="section-header">
+                        <span>👥</span>
+                        <h3>行為特徵</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">偏好非同步學習方式</span></li>
+                        <li><span contenteditable="true">會使用倍速播放節省時間</span></li>
+                        <li><span contenteditable="true">重視內容摘要與重點標記</span></li>
+                        <li><span contenteditable="true">喜歡簡潔清晰的介面</span></li>
+                    </ul>
+                </div>
+                <div class="section stats">
+                    <div class="section-header">
+                        <span>⭐</span>
+                        <h3>使用指標</h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280; font-size: 0.875rem;">技術熟悉度</span>
+                            <span style="font-weight: bold;" contenteditable="true">65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span>🕐</span>
+                        <span><strong>使用頻率：</strong><span contenteditable="true">每週 1-2 次</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span>💼</span>
+                        <span><strong>投入時間：</strong><span contenteditable="true">每週 3-4 小時</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-card" id="persona-3">
+            <div class="card-header">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=YuXuan&backgroundColor=d1d4f9" alt="張宇軒" class="avatar">
+                <div class="card-header-info">
+                    <h2 contenteditable="true">張宇軒</h2>
+                    <div class="meta" contenteditable="true">22 歲 • 大三學生</div>
+                    <div class="quote" contenteditable="true">"我想在畢業前多學點東西，希望學習過程能更有趣、更有成就感"</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="section goals">
+                    <div class="section-header">
+                        <span>🎯</span>
+                        <h3>目標與動機</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">探索未來職涯方向</span></li>
+                        <li><span contenteditable="true">培養跨領域思維能力</span></li>
+                        <li><span contenteditable="true">認識不同背景的朋友</span></li>
+                        <li><span contenteditable="true">建立學習履歷與作品</span></li>
+                    </ul>
+                </div>
+                <div class="section pains">
+                    <div class="section-header">
+                        <span>⚡</span>
+                        <h3>痛點與挫折</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">不知道哪些讀書會適合自己</span></li>
+                        <li><span contenteditable="true">缺乏學習動力與持續性</span></li>
+                        <li><span contenteditable="true">想發問但怕問題太基礎</span></li>
+                        <li><span contenteditable="true">學習成果沒有被看見的感覺</span></li>
+                        <li><span contenteditable="true">找不到志同道合的學習夥伴</span></li>
+                    </ul>
+                </div>
+                <div class="section scenario">
+                    <div class="section-header">
+                        <span>📖</span>
+                        <h3>典型使用情境</h3>
+                    </div>
+                    <p contenteditable="true">晚上 9 點下課後回到宿舍，打開電腦加入「設計思考讀書會」。喜歡在白板上畫出自己的想法，與其他成員腦力激盪。會後會將討論內容整理成筆記，並在社群分享自己的學習心得獲得回饋。</p>
+                </div>
+                <div class="section behaviors">
+                    <div class="section-header">
+                        <span>👥</span>
+                        <h3>行為特徵</h3>
+                    </div>
+                    <ul>
+                        <li><span contenteditable="true">喜歡視覺化與互動式學習</span></li>
+                        <li><span contenteditable="true">重視社群認同與歸屬感</span></li>
+                        <li><span contenteditable="true">需要即時回饋與鼓勵</span></li>
+                        <li><span contenteditable="true">會嘗試參加不同主題讀書會</span></li>
+                    </ul>
+                </div>
+                <div class="section stats">
+                    <div class="section-header">
+                        <span>⭐</span>
+                        <h3>使用指標</h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280; font-size: 0.875rem;">技術熟悉度</span>
+                            <span style="font-weight: bold;">70%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 70%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span>🕐</span>
+                        <span><strong>使用頻率：</strong>每週 2-4 次</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>💼</span>
+                        <span><strong>投入時間：</strong>每週 4-6 小時</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insights">
+            <h3>核心洞察</h3>
+            <div class="insights-grid">
+                <div class="insight-item">
+                    <span class="arrow">→</span>
+                    <p><strong>整合需求強烈：</strong>所有用戶都面臨工具分散的痛點，需要一站式解決方案</p>
+                </div>
+                <div class="insight-item">
+                    <span class="arrow">→</span>
+                    <p><strong>非同步學習重要：</strong>62.5% 用戶無法準時參與直播，需要完善的回放與筆記功能</p>
+                </div>
+                <div class="insight-item">
+                    <span class="arrow">→</span>
+                    <p><strong>社群互動價值：</strong>用戶重視與成員的連結，需要強化社群功能與參與感</p>
+                </div>
+                <div class="insight-item">
+                    <span class="arrow">→</span>
+                    <p><strong>知識管理需求：</strong>筆記、白板、錄影的統一管理是提升學習效率的關鍵</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPersona(index) {
+            var cards = document.querySelectorAll('.main-card');
+            var buttons = document.querySelectorAll('.persona-card');
+            
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].classList.remove('active');
+            }
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            
+            document.getElementById('persona-' + index).classList.add('active');
+            buttons[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>
